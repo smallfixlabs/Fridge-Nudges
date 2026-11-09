@@ -1,0 +1,49 @@
+```html
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fridge Nudges</title>
+<style>
+body{font-family:sans-serif;background:#f2f6f2;max-width:500px;margin:auto;padding:14px}
+.c{background:#fff;border-radius:12px;padding:12px;margin:10px 0}
+input,button{font-size:1.1rem;padding:12px;width:100%;box-sizing:border-box;margin:4px 0;border-radius:10px}
+input{border:1px solid #aaa}
+button{background:#2e7d32;color:#fff;border:0}
+.i{border-left:8px solid #2e7d32;background:#fff;padding:10px;margin:8px 0;border-radius:8px}
+.r{border-color:#c62828}.a{border-color:#ef8f00}
+</style></head><body>
+<h1>Fridge Nudges</h1>
+<div class="c" id="t"></div>
+<form class="c" id="f">
+<input id="n" placeholder="What did you buy? e.g. bok choy" required>
+<input id="d" type="date" required>
+<input id="k" type="number" min="1" placeholder="Days it keeps (blank = auto)">
+<button>Add to fridge</button>
+</form>
+<div id="l"></div>
+<small>Dates are estimates. Check smell and look before eating.</small>
+<script>
+const S={chicken:2,beef:4,pork:4,fish:2,milk:7,cheese:21,egg:28,eggplant:7,spinach:5,"bok choy":5,lettuce:5,broccoli:5,carrot:21,tomato:5,pepper:7,bread:5,apple:21,banana:4,berr:4},
+D=[[/chicken/,"Sheet-pan chicken with roasted veg."],[/beef|pork/,"Beef and veg stir-fry over rice."],[/spinach|bok choy|lettuce/,"Garlicky greens with rice or noodles."]],
+$=i=>document.getElementById(i),
+left=x=>x.k-Math.round((new Date().setHours(0,0,0,0)-new Date(x.d+"T00:00"))/864e5);
+let L=JSON.parse(localStorage.fn||"[]");
+$("d").value=new Date().toLocaleDateString("en-CA");
+$("f").onsubmit=e=>{
+e.preventDefault();
+const n=$("n").value.trim(),
+w=Object.keys(S).filter(s=>n.toLowerCase().includes(s)).sort((a,b)=>b.length-a.length)[0];
+L.push({n,d:$("d").value,k:+$("k").value||S[w]||5});
+$("n").value=$("k").value="";
+save()};
+function del(i){L.splice(i,1);save()}
+function save(){localStorage.fn=JSON.stringify(L);draw()}
+function draw(){
+L.sort((a,b)=>left(a)-left(b));
+const t=L.slice(0,3).map(x=>x.n).join(", "),
+r=D.find(q=>q[0].test(t.toLowerCase()));
+$("t").innerHTML=L.length?"<b>Use these today:</b> "+t+"<br><b>Dinner idea:</b> "+(r?r[1]:"Veggie stir-fry or a big omelette."):"Fridge empty. Add something below.";
+$("l").innerHTML=L.map((x,i)=>{const n=left(x);return `<div class="i ${n<2?"r":n<4?"a":""}"><b>${x.n.replace(/</g,"&lt;")}</b>: ${n<0?"past its estimate":n+" day(s) left"}<button onclick="del(${i})">Used it</button><button onclick="del(${i})" style="background:#777">Tossed it</button></div>`}).join("")}
+draw()
+</script></body></html>
+```
