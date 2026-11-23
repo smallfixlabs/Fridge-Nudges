@@ -1,7 +1,7 @@
-```html
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json">
 <title>Fridge Nudges</title>
 <style>
 body{font-family:sans-serif;background:#f2f6f2;max-width:500px;margin:auto;padding:14px}
@@ -45,5 +45,6 @@ r=D.find(q=>q[0].test(t.toLowerCase()));
 $("t").innerHTML=L.length?"<b>Use these today:</b> "+t+"<br><b>Dinner idea:</b> "+(r?r[1]:"Veggie stir-fry or a big omelette."):"Fridge empty. Add something below.";
 $("l").innerHTML=L.map((x,i)=>{const n=left(x);return `<div class="i ${n<2?"r":n<4?"a":""}"><b>${x.n.replace(/</g,"&lt;")}</b>: ${n<0?"past its estimate":n+" day(s) left"}<button onclick="del(${i})">Used it</button><button onclick="del(${i})" style="background:#777">Tossed it</button></div>`}).join("")}
 draw()
-</script></body></html>
-```
+</script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')</script>
+</body></html>
